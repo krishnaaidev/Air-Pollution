@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Pollution & Health Risk Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav>
+        <a href="/"><i class="fas fa-home"></i> Home</a>
+        <a href="/predict-page"><i class="fas fa-heartbeat"></i> Predict Disease Risk</a>
+    </nav>
+
+    <div class="container">
+        <div class="hero">
+            <h1><i class="fas fa-wind"></i> Air Pollution & Health Risk Analysis</h1>
+            <p>Monitor and predict health risks associated with air pollution exposure. Stay informed about potential respiratory and cardiovascular diseases caused by harmful pollutants.</p>
+            <div class="hero-buttons">
+                <a href="/predict-page" class="cta-button">
+                    <i class="fas fa-calculator"></i> Start Prediction
+                </a>
+                </a>
+            </div>
+        </div>
+
+        <!-- New Section: How to Find Pollution Data -->
+        <div class="data-sources-section">
+            <h2 class="section-title"><i class="fas fa-search-location"></i> How to Find Air Pollution Data</h2>
+            <p class="section-description">To get accurate pollution data for your area, here are several reliable sources and methods:</p>
+            
+            <div class="data-sources-grid">
+                <!-- Source 1: Government Websites -->
+                <div class="data-source-card">
+                    <div class="source-icon">
+                        <i class="fas fa-landmark"></i>
+                    </div>
+                    <h3>Government Monitoring Stations</h3>
+                    <ul class="source-list">
+                        <li><strong>CPCB India:</strong> <a href="https://cpcb.nic.in/" target="_blank">Central Pollution Control Board</a></li>
+                        <li><strong>AQI:</strong> <a href="https://www.aqi.in/" target="_blank">AQI</a></li>
+                        <li><strong>SAFAR:</strong> <a href="https://safar.tropmet.res.in/" target="_blank">System of Air Quality Forecasting</a></li>
+                        <li><strong>State PCBs:</strong> Check your state pollution control board website</li>
+                    </ul>
+                    <div class="data-example">
+                        <p><i class="fas fa-info-circle"></i> Look for stations near your location for local data</p>
+                        <p><i class="fas fa-info-circle"></i> Use AQI - Recommended</p>
+                    </div>
+                </div>
+
+                <!-- Source 2: Mobile Apps -->
+                <div class="data-source-card">
+                    <div class="source-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Mobile Applications</h3>
+                    <ul class="source-list">
+                        <li><strong>AirVisual:</strong> Real-time air quality and forecasts</li>
+                        <li><strong>Plume Labs:</strong> Hyperlocal pollution tracking</li>
+                        <li><strong>BreezoMeter:</strong> Detailed pollution breakdown</li>
+                        <li><strong>SAFAR-Air:</strong> India-specific air quality app</li>
+                        <li><strong>CPCB's Sameer:</strong> Official Indian AQI app</li>
+                    </ul>
+                    <div class="data-example">
+                        <p><i class="fas fa-info-circle"></i> Apps provide hourly updates and forecasts</p>
+                    </div>
+                </div>
+
+                <!-- Source 3: International Websites -->
+                <div class="data-source-card">
+                    <div class="source-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h3>International Platforms</h3>
+                    <ul class="source-list">
+                        <li><strong>World Air Quality Index:</strong> <a href="https://waqi.info/" target="_blank">waqi.info</a></li>
+                        <li><strong>IQAir:</strong> <a href="https://www.iqair.com/" target="_blank">Global air quality</a></li>
+                        <li><strong>OpenAQ:</strong> <a href="https://openaq.org/" target="_blank">Open air quality data</a></li>
+                        <li><strong>NASA Worldview:</strong> <a href="https://worldview.earthdata.nasa.gov/" target="_blank">Satellite data</a></li>
+                    </ul>
+                    <div class="data-example">
+                        <p><i class="fas fa-info-circle"></i> Global platforms often have Indian city data</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Interpretation Guide -->
+            <div class="interpretation-guide">
+                <h3><i class="fas fa-book"></i> Understanding Pollutant Levels</h3>
+                <p class="note"><i class="fas fa-exclamation-triangle"></i> <strong>Important:</strong> Divide ppb by 1000 to get ppm (for CO conversion).</p>
+                <div class="pollutant-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Pollutant</th>
+                                <th>Good Level</th>
+                                <th>Moderate</th>
+                                <th>Unhealthy</th>
+                                <th>Units</th>
+                                <th>Sources</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>PM2.5</strong> (Fine Particles)</td>
+                                <td>0-12 μg/m³</td>
+                                <td>12-35 μg/m³</td>
+                                <td>35+ μg/m³</td>
+                                <td>μg/m³</td>
+                                <td>Vehicles, Industry, Construction</td>
+                            </tr>
+                            <tr>
+                                <td><strong>PM10</strong> (Coarse Particles)</td>
+                                <td>0-54 μg/m³</td>
+                                <td>54-154 μg/m³</td>
+                                <td>154+ μg/m³</td>
+                                <td>μg/m³</td>
+                                <td>Dust, Pollen, Construction</td>
+                            </tr>
+                            <tr>
+                                <td><strong>NO₂</strong> (Nitrogen Dioxide)</td>
+                                <td>0-40 ppb</td>
+                                <td>40-80 ppb</td>
+                                <td>80+ ppb</td>
+                                <td>ppb</td>
+                                <td>Vehicle exhaust, Power plants</td>
+                            </tr>
+                            <tr>
+                                <td><strong>SO₂</strong> (Sulfur Dioxide)</td>
+                                <td>0-20 ppb</td>
+                                <td>20-75 ppb</td>
+                                <td>75+ ppb</td>
+                                <td>ppb</td>
+                                <td>Industrial processes, Coal burning</td>
+                            </tr>
+                            <tr>
+                                <td><strong>CO</strong> (Carbon Monoxide)</td>
+                                <td>0.1-0.4 ppm</td>
+                                <td>0.4-0.9 ppm</td>
+                                <td>0.9+ ppm</td>
+                                <td>ppm</td>
+                                <td>Vehicle exhaust, Incomplete combustion</td>
+                            </tr>
+                            <tr>
+                                <td><strong>O₃</strong> (Ozone)</td>
+                                <td>0-54 ppb</td>
+                                <td>54-70 ppb</td>
+                                <td>70+ ppb</td>
+                                <td>ppb</td>
+                                <td>Chemical reactions in sunlight</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Step-by-Step Guide -->
+            <div class="step-by-step">
+                <h3><i class="fas fa-map-signs"></i> Step-by-Step Guide to Get Data</h3>
+                <div class="steps-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Visit a Monitoring Website</h4>
+                            <p>Go to <a href="https://www.aqi.in/" target="_blank">AQI</a> or <a href="https://waqi.info/" target="_blank">World Air Quality Index</a></p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Search Your Location</h4>
+                            <p>Enter your city or use the map to find the nearest monitoring station</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Check Real-time Data</h4>
+                            <p>Look for sections showing individual pollutant concentrations (PM2.5, PM10, NO₂, etc.)</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Note the Values</h4>
+                            <p>Record the current or 24-hour average values for each pollutant</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Use in Prediction Tool</h4>
+                            <p>Enter these values in our prediction form to assess health risks</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sample Data Section -->
+            <div class="sample-data">
+                <h3><i class="fas fa-clipboard-list"></i> Sample Data for Major Indian Cities</h3>
+                <div class="sample-cards">
+                    <div class="sample-card">
+                        <h4>Delhi (Winter Day)</h4>
+                        <ul>
+                            <li>PM2.5: 250-400 μg/m³</li>
+                            <li>PM10: 400-600 μg/m³</li>
+                            <li>NO₂: 80-120 ppb</li>
+                            <li>CO: 2-4 ppm</li>
+                        </ul>
+                    </div>
+                    <div class="sample-card">
+                        <h4>Mumbai (Average Day)</h4>
+                        <ul>
+                            <li>PM2.5: 60-100 μg/m³</li>
+                            <li>PM10: 100-150 μg/m³</li>
+                            <li>NO₂: 40-60 ppb</li>
+                            <li>SO₂: 10-20 ppb</li>
+                        </ul>
+                    </div>
+                    <div class="sample-card">
+                        <h4>Bengaluru (Clean Day)</h4>
+                        <ul>
+                            <li>PM2.5: 30-50 μg/m³</li>
+                            <li>PM10: 50-80 μg/m³</li>
+                            <li>NO₂: 20-40 ppb</li>
+                            <li>O₃: 40-60 ppb</li>
+                        </ul>
+                    </div>
+                </div>
+                <p class="note"><i class="fas fa-exclamation-triangle"></i> <strong>Note:</strong> These are sample values. Always use real-time data from monitoring stations for accurate predictions.</p>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="quick-links">
+                <h3><i class="fas fa-external-link-alt"></i> Quick Links to Get Started</h3>
+                <div class="link-buttons">
+                    <a href="https://www.aqi.in" target="_blank" class="link-button">
+                        <i class="fas fa-chart-line"></i> AQI
+                    </a>
+                    <a href="https://waqi.info/" target="_blank" class="link-button">
+                        <i class="fas fa-globe-asia"></i> World Air Quality Index
+                    </a>
+                    <a href="https://play.google.com/store/apps/details?id=com.airvisual" target="_blank" class="link-button">
+                        <i class="fab fa-google-play"></i> AirVisual App
+                    </a>
+                    <a href="/predict-page" class="link-button primary">
+                        <i class="fas fa-calculator"></i> Start Prediction
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Original Disease Grid Section -->
+        <div class="stats-overview">
+            <h2><i class="fas fa-chart-line"></i> Understanding Air Pollution Health Impacts</h2>
+            <p>Air pollution poses serious threats to human health, causing various diseases through long-term exposure to pollutants like PM2.5, PM10, NO₂, SO₂, CO, and O₃.</p>
+        </div>
+
+        <h2 class="section-title"><i class="fas fa-lungs"></i> Common Pollution-Related Diseases</h2>
+        <div class="disease-grid">
+            <div class="disease-card">
+                <h3><i class="fas fa-allergies"></i> Asthma</h3>
+                <p>Chronic airway inflammation causing wheezing, coughing, and breathing difficulties. Triggered by pollutants like PM2.5 and O₃.</p>
+            </div>
+            <div class="disease-card">
+                <h3><i class="fas fa-lungs"></i> Bronchitis</h3>
+                <p>Inflammation of bronchial tubes leading to persistent cough, mucus production, and chest discomfort.</p>
+            </div>
+            <div class="disease-card">
+                <h3><i class="fas fa-wind"></i> COPD</h3>
+                <p>Chronic obstructive pulmonary disease causing progressive breathing difficulties and reduced lung function.</p>
+            </div>
+            <div class="disease-card">
+                <h3><i class="fas fa-dna"></i> Lung Cancer</h3>
+                <p>Malignant lung tumor development often linked to long-term exposure to carcinogenic air pollutants.</p>
+            </div>
+            <div class="disease-card">
+                <h3><i class="fas fa-virus"></i> Pneumonia</h3>
+                <p>Lung infection exacerbated by air pollution, causing inflammation and fluid accumulation in air sacs.</p>
+            </div>
+            <div class="disease-card">
+                <h3><i class="fas fa-heart"></i> Heart Disease</h3>
+                <p>Increased cardiovascular risks including heart attacks, arrhythmias, and heart failure due to pollution.</p>
+            </div>
+            <div class="disease-card">
+                <h3><i class="fas fa-brain"></i> Stroke</h3>
+                <p>Cerebrovascular events triggered by particulate matter affecting blood flow to the brain.</p>
+            </div>
+            <div class="disease-card">
+                <h3><i class="fas fa-sneeze"></i> Allergic Rhinitis</h3>
+                <p>Nasal inflammation causing sneezing, congestion, and runny nose due to airborne allergens.</p>
+            </div>
+            <div class="disease-card">
+                <h3><i class="fas fa-eye"></i> Eye Irritation</h3>
+                <p>Redness, itching, and watering eyes caused by direct exposure to pollutants and smog.</p>
+            </div>
+            <div class="disease-card">
+                <h3><i class="fas fa-head-side-cough"></i> Chronic Cough</h3>
+                <p>Persistent cough lasting weeks or months, often resulting from prolonged pollution exposure.</p>
+            </div>
+            <div class="disease-card">
+                <h3><i class="fas fa-tachometer-alt"></i> Reduced Lung Function</h3>
+                <p>Gradual decline in lung capacity and breathing efficiency due to long-term pollution exposure.</p>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <h2>Check Your Risk Level</h2>
+            <p>Now that you know how to get pollution data, enter it in our prediction tool to assess your health risks</p>
+            <div class="cta-buttons">
+                <a href="/predict-page" class="cta-button">
+                    <i class="fas fa-calculator"></i> Predict Disease Risk Now
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 Air Pollution Health Risk Predictor | Developed for Public Health Awareness</p>
+        <p class="footer-note"><i class="fas fa-info-circle"></i> This tool provides predictive insights based on scientific models. Consult healthcare professionals for medical advice.</p>
+    </footer>
+
+    <script>
+        async function loadSampleData(type) {
+            try {
+                const response = await fetch('/sample-data');
+                const samples = await response.json();
+                
+                if (samples[type]) {
+                    const sample = samples[type];
+                    // Store sample data for use on predict page
+                    localStorage.setItem('sampleData', JSON.stringify(sample));
+                    localStorage.setItem('sampleType', type);
+                    
+                    // Redirect to predict page
+                    window.location.href = '/predict-page';
+                }
+            } catch (error) {
+                console.error('Error loading sample data:', error);
+                alert('Failed to load sample data. Please try again.');
+            }
+        }
+    </script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disease Risk Prediction | Air Pollution Analysis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav>
+        <a href="/"><i class="fas fa-home"></i> Home</a>
+        <a href="/predict-page"><i class="fas fa-heartbeat"></i> Predict Disease Risk</a>
+    </nav>
+
+    <div class="container">
+        <div class="hero">
+            <h1><i class="fas fa-stethoscope"></i> Disease Risk Prediction Tool</h1>
+            <p>Enter pollution data and location information to predict potential health risks. Our AI model analyzes multiple factors to provide risk assessments.</p>
+            <div class="alert info">
+                <i class="fas fa-info-circle"></i>
+                <div>
+                    <strong>Important Note:</strong> 
+                    <ul style="margin: 0.5rem 0 0 1rem;">
+                        <li>For CO (Carbon Monoxide): Divide ppb by 1000 to get ppm</li>
+                        <li>Example: 800 ppb = 0.8 ppm</li>
+                        <li>Enter valid state and district names (minimum 2 characters each)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <h2><i class="fas fa-sliders-h"></i> Input Parameters</h2>
+            
+            <!-- Location Validation Alert -->
+            <div id="locationAlert" class="alert warning" style="display: none; margin-bottom: 1rem;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span id="locationAlertText"></span>
+            </div>
+            
+            <!-- Success Alert -->
+            <div id="successAlert" class="alert success" style="display: none; margin-bottom: 1rem;"></div>
+            
+            <form id="predictionForm">
+                <div class="form-grid">
+                    <!-- Location Section -->
+                    <div class="form-group">
+                        <label for="state"><i class="fas fa-map-marker-alt"></i> State *</label>
+                        <input type="text" id="state" placeholder="e.g., Maharashtra, Delhi, Karnataka" required>
+                        <small class="helper-text">Enter valid Indian state name</small>
+                        <div id="stateError" class="error-text"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="district"><i class="fas fa-city"></i> District *</label>
+                        <input type="text" id="district" placeholder="e.g., Mumbai, Central Delhi, Bangalore Urban" required>
+                        <small class="helper-text">Enter valid district name</small>
+                        <div id="districtError" class="error-text"></div>
+                    </div>
+
+                    <!-- Pollutant Levels -->
+                    <div class="form-group">
+                        <label for="pm25"><i class="fas fa-smog"></i> PM2.5 (μg/m³) *</label>
+                        <input type="number" id="pm25" value="50" min="0" max="500" step="0.1" required>
+                        <small class="helper-text">Fine particulate matter - most harmful</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pm10"><i class="fas fa-wind"></i> PM10 (μg/m³) *</label>
+                        <input type="number" id="pm10" value="80" min="0" max="500" step="0.1" required>
+                        <small class="helper-text">Coarse particulate matter</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="no2"><i class="fas fa-industry"></i> NO₂ (ppb) *</label>
+                        <input type="number" id="no2" value="40" min="0" max="200" step="0.1" required>
+                        <small class="helper-text">Nitrogen dioxide from combustion</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="so2"><i class="fas fa-fire"></i> SO₂ (ppb) *</label>
+                        <input type="number" id="so2" value="20" min="0" max="200" step="0.1" required>
+                        <small class="helper-text">Sulfur dioxide from industrial sources</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="co"><i class="fas fa-car"></i> CO (ppm) *</label>
+                        <input type="number" id="co" value="0.8" min="0" max="10" step="0.01" required>
+                        <small class="helper-text">Carbon monoxide from vehicles (ppb ÷ 1000 = ppm)</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="o3"><i class="fas fa-sun"></i> O₃ (ppb) *</label>
+                        <input type="number" id="o3" value="60" min="0" max="200" step="0.1" required>
+                        <small class="helper-text">Ground-level ozone</small>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-bolt"></i> Analyze Health Risks
+                    </button>
+                    
+                    <div class="sample-buttons">
+                        <span style="color: #aaa; margin-right: 1rem;">Try sample data:</span>
+                        <button type="button" class="sample-btn" data-sample="delhi">
+                            <i class="fas fa-smog"></i> Delhi
+                        </button>
+                        <button type="button" class="sample-btn" data-sample="mumbai">
+                            <i class="fas fa-city"></i> Mumbai
+                        </button>
+                        <button type="button" class="sample-btn" data-sample="clean_city">
+                            <i class="fas fa-mountain"></i> Clean City
+                        </button>
+                    </div>
+                </div>
+            </form>
+            
+            <div class="form-help">
+                <h3><i class="fas fa-question-circle"></i> Need Help?</h3>
+                <p>• Use the sample data buttons to test the system</p>
+                <p>• Visit our <a href="/">home page</a> for detailed instructions on finding pollution data</p>
+                <p>• Make sure state and district names are valid (not just numbers)</p>
+            </div>
+        </div>
+
+        <div class="results-container" id="resultsSection" style="display: none;">
+            <h2><i class="fas fa-chart-pie"></i> Risk Analysis Results</h2>
+            <div id="loading" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Analyzing pollution data and predicting health risks...</p>
+            </div>
+            <div id="errorAlert" class="alert error" style="display: none;"></div>
+            <div id="result" class="results-grid"></div>
+            
+            <div class="risk-summary" id="riskSummary" style="display: none; margin-top: 2rem;">
+                <h3><i class="fas fa-chart-bar"></i> Risk Summary</h3>
+                <div class="summary-stats">
+                    <div class="stat-card">
+                        <span class="stat-label">High Risk Diseases</span>
+                        <span class="stat-value high" id="highRiskCount">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Low Risk Diseases</span>
+                        <span class="stat-value low" id="lowRiskCount">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Highest Risk</span>
+                        <span class="stat-value" id="highestRisk">-</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Location</span>
+                        <span class="stat-value location" id="locationInfo">-</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="results-actions">
+                <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="secondary-button">
+                    <i class="fas fa-arrow-up"></i> Back to Form
+                </button>
+                <button onclick="resetForm()" class="secondary-button">
+                    <i class="fas fa-redo"></i> New Prediction
+                </button>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <h3><i class="fas fa-info-circle"></i> Understanding the Results</h3>
+            <p><strong>High Risk</strong> indicates a probability ≥ 50% of developing the condition with current pollution exposure levels.</p>
+            <p><strong>Low Risk</strong> indicates a probability < 50%. However, prolonged exposure can still increase risks over time.</p>
+            <div class="warning">
+                <i class="fas fa-exclamation-triangle"></i> 
+                <div>
+                    <strong>Disclaimer:</strong> This tool provides predictive insights based on statistical models. 
+                    It is not a substitute for professional medical advice. Always consult healthcare professionals for medical diagnosis and treatment.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 Air Pollution Health Risk Predictor | Developed for Public Health Awareness</p>
+        <p class="footer-note"><i class="fas fa-info-circle"></i> This tool provides predictive insights based on scientific models. Consult healthcare professionals for medical advice.</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
